@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal BNI SantriPay v5</title>
+<style>
+:root{
+  --orange:#f15a24;--orange2:#ff7a3d;--teal:#075f63;--teal2:#0b7d82;
+  --ink:#17353c;--muted:#667b82;--bg:#f3f6f7;--card:#fff;--line:#dfe7e9;
+  --green:#167a3f;--red:#b42318;--amber:#966200;--blue:#2756a3;
+  --shadow:0 12px 30px rgba(10,53,58,.07)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1440px;margin:auto}
+.top{
+  position:sticky;top:0;z-index:40;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:11px 18px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:46px;height:46px;border-radius:14px;background:var(--orange);color:#fff;display:grid;place-items:center;font-weight:900}
+.brand strong{display:block}.brand small{color:var(--muted)}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:none;border-radius:11px;padding:10px 13px;font-weight:800}
+.primary{background:var(--orange);color:#fff}.secondary{background:#edf2f3;color:#29464c}.teal{background:var(--teal);color:#fff}
+.shell{display:grid;grid-template-columns:275px 1fr;gap:16px;padding:16px}
+.sidebar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:13px;height:max-content;position:sticky;top:84px;box-shadow:var(--shadow)}
+.side-title{padding:11px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;margin-bottom:9px}
+.side-title small{opacity:.8}.side-title strong{display:block;margin-top:3px}
+.nav{width:100%;text-align:left;border:none;background:transparent;padding:10px 11px;border-radius:11px;color:var(--ink);margin:2px 0}
+.nav:hover,.nav.active{background:#eef8f8;color:var(--teal);font-weight:800}
+.main{min-width:0}.page{display:none}.page.active{display:block}
+.hero{
+  min-height:420px;border-radius:28px;padding:42px;background:
+  radial-gradient(circle at 90% 10%,rgba(255,255,255,.13),transparent 25%),
+  linear-gradient(135deg,var(--teal),#0c8388);color:#fff;box-shadow:0 18px 38px rgba(5,95,99,.18);
+  display:flex;flex-direction:column;justify-content:center
+}
+.hero .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;opacity:.75}
+.hero h1{font-size:48px;line-height:1.03;margin:12px 0 16px;max-width:950px}
+.hero p{font-size:17px;line-height:1.7;max-width:880px;opacity:.92}
+.hero-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.tag{display:inline-block;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}
+.tag.light{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:#fff}
+.tag.ok{background:#dcfce7;color:#166534}.tag.info{background:#eaf2ff;color:#2756a3}.tag.wait{background:#fff3cb;color:#805600}.tag.bad{background:#fee2e2;color:#991b1b}
+.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:22px 0 11px}
+.section-title h2{margin:0;font-size:24px}.section-title p{margin:0;color:var(--muted);font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+.card h3,.card h4{margin-top:0}.card p{line-height:1.6;color:#4e656c}
+.card small{color:var(--muted)}.big{font-size:26px;font-weight:900;margin-top:5px}
+.list{padding-left:18px;margin:9px 0 0;line-height:1.68;color:#4d646b;font-size:13px}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:none}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:15px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:13px;text-align:left}th{background:#f7f9fa;color:#4f646b}
+.note{padding:13px;border-radius:13px;font-size:12px;line-height:1.6}
+.note.warn{background:#fff8e8;border:1px solid #efd39b;color:#6b4a10}.note.blue{background:#eff6ff;border:1px solid #d6e7ff;color:#294f75}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center}.num{width:34px;height:34px;border-radius:50%;background:#eef8f8;color:var(--teal);display:grid;place-items:center;margin:0 auto 8px;font-weight:900}
+.arch{display:grid;grid-template-columns:1fr 62px 1fr 62px 1fr;gap:10px;align-items:center}.archbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;min-height:200px}.arrow{text-align:center;font-size:29px;color:var(--teal)}
+.calc{background:linear-gradient(135deg,#0a252a,#123f46);color:#fff;border-radius:22px;padding:20px}
+.calc label{font-size:12px;opacity:.8}.calc input{width:100%;padding:11px;border:none;border-radius:10px;margin:5px 0 10px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.result{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px}.result small{opacity:.75}.result strong{display:block;font-size:21px;margin-top:5px}
+.road{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.phase{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px}.phase .label{color:var(--teal);font-size:11px;font-weight:900;letter-spacing:.8px}.phase h4{margin:6px 0}
+.ask{background:linear-gradient(135deg,#fff,#f7fbfb);border:2px solid #cfe5e5;border-radius:22px;padding:22px}
+.ask h2{margin-top:0}.ask-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.ask-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.source a{color:var(--teal);text-decoration:none}.source a:hover{text-decoration:underline}
+.print-cover{display:none}
+@media(max-width:1050px){.shell{grid-template-columns:1fr}.sidebar{position:static}.cards{grid-template-columns:1fr 1fr}.grid2,.grid3{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arch{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.road{grid-template-columns:1fr 1fr}.calc-grid,.result-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.shell{padding:10px}.hero{padding:25px;min-height:360px}.hero h1{font-size:34px}.cards,.road,.calc-grid,.result-grid,.ask-grid{grid-template-columns:1fr}.top{padding:9px}.top-actions .secondary{display:none}}
+@media print{
+  body{background:#fff}.top,.sidebar{display:none!important}.shell{display:block;padding:0}.page{display:block!important;page-break-before:always}.page:first-child{page-break-before:auto}
+  .hero{box-shadow:none;min-height:90vh;border-radius:0}.card,.tablewrap,.archbox,.phase{box-shadow:none}.btn{display:none}.wrap{max-width:none}.main{width:100%}
+  .section-title{page-break-after:avoid}.card,.ask,.calc{break-inside:avoid}.print-cover{display:block}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo">BNI</div><div><strong>Proposal BNI SantriPay v5</strong><small>Concept Draft • Interactive Business Proposal</small></div></div>
+    <div class="top-actions"><button class="btn secondary" onclick="window.print()">Cetak / Simpan PDF</button><button class="btn teal" onclick="go('decision',document.querySelector('[data-id=decision]'))">Decision Request</button></div>
+  </div>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-title"><small>Working title</small><strong>BNI SantriPay</strong></div>
+      <button class="nav active" data-id="cover" onclick="go('cover',this)">01. Cover Proposal</button>
+      <button class="nav" data-id="executive" onclick="go('executive',this)">02. Executive Summary</button>
+      <button class="nav" data-id="problem" onclick="go('problem',this)">03. Masalah & Peluang</button>
+      <button class="nav" data-id="solution" onclick="go('solution',this)">04. Solusi Produk</button>
+      <button class="nav" data-id="journey" onclick="go('journey',this)">05. User Journey</button>
+      <button class="nav" data-id="business" onclick="go('business',this)">06. Business Case</button>
+      <button class="nav" data-id="pilot" onclick="go('pilot',this)">07. Pilot Project</button>
+      <button class="nav" data-id="architecture" onclick="go('architecture',this)">08. Arsitektur & API</button>
+      <button class="nav" data-id="governance" onclick="go('governance',this)">09. Governance & Risk</button>
+      <button class="nav" data-id="roadmap" onclick="go('roadmap',this)">10. Roadmap</button>
+      <button class="nav" data-id="decision" onclick="go('decision',this)">11. Decision Request</button>
+      <button class="nav" data-id="sources" onclick="go('sources',this)">12. Rujukan Resmi</button>
+    </aside>
+
+    <main class="main">
+      <section id="cover" class="page active">
+        <div class="hero">
+          <div class="eyebrow">Proposal Konsep Pengembangan Ekosistem Keuangan Digital Pesantren</div>
+          <h1>BNI SantriPay</h1>
+          <p>
+            Solusi cashless terkontrol untuk santri dengan QRIS, limit belanja harian,
+            merchant whitelist, pengawasan wali, serta dashboard pesantren—dengan proses pembayaran
+            tetap melalui kanal perbankan resmi.
+          </p>
+          <div class="hero-meta">
+            <span class="tag light">Working Title</span>
+            <span class="tag light">Prototype v5</span>
+            <span class="tag light">Untuk diskusi internal BNI & mitra pesantren</span>
+          </div>
+        </div>
+
+        <div class="cards" style="margin-top:14px">
+          <div class="card"><small>Kontrol default prototype</small><div class="big">Rp20.000</div><small>limit/hari, dapat dikonfigurasi</small></div>
+          <div class="card"><small>Metode pembayaran</small><div class="big">QRIS</div><small>sesuai skema resmi</small></div>
+          <div class="card"><small>Kontrol merchant</small><div class="big">Whitelist</div><small>merchant lingkungan pesantren</small></div>
+          <div class="card"><small>Monitoring</small><div class="big">5 Peran</div><small>Santri, wali, pesantren, merchant, BNI</small></div>
+        </div>
+        <div class="note warn" style="margin-top:12px">
+          “BNI SantriPay” merupakan nama kerja dalam prototype ini dan bukan nama produk resmi BNI. Angka pada proposal adalah simulasi/asumsi untuk membantu diskusi, bukan data kinerja atau komitmen komersial BNI.
+        </div>
+      </section>
+
+      <section id="executive" class="page">
+        <div class="hero">
+          <div class="eyebrow">Executive Summary</div>
+          <h1>Dari Program Tabungan Santri Menjadi Ekosistem Transaksi Pesantren</h1>
+          <p>
+            Kebutuhan pesantren tidak berhenti pada pembukaan tabungan. Pesantren membutuhkan mekanisme agar dana santri
+            dapat digunakan secara praktis namun tetap dibatasi, dapat diawasi, dan diarahkan hanya ke merchant yang disetujui.
+          </p>
+        </div>
+        <div class="section-title"><h2>Usulan Nilai Inti</h2></div>
+        <div class="grid3">
+          <div class="card"><h3>Untuk BNI</h3><p>Memperluas hubungan dari rekening individu menjadi ekosistem transaksi, merchant QRIS, dan kemitraan kelembagaan.</p></div>
+          <div class="card"><h3>Untuk Pesantren</h3><p>Mengurangi ketergantungan pada uang tunai dan meningkatkan kontrol serta transparansi transaksi santri.</p></div>
+          <div class="card"><h3>Untuk Wali & Santri</h3><p>Memberi kebebasan terbatas: santri tetap bisa belanja, tetapi sesuai limit dan aturan yang telah disepakati.</p></div>
+        </div>
+        <div class="section-title"><h2>Konsep Satu Kalimat</h2></div>
+        <div class="ask">
+          <h2 style="font-size:30px">“Santri boleh bertransaksi secara digital, tetapi sistem memastikan transaksi tetap dalam batas yang sehat.”</h2>
+        </div>
+      </section>
+
+      <section id="problem" class="page">
+        <div class="section-title"><h2>Masalah yang Dihadapi Pesantren</h2><p>Hasil kebutuhan lapangan yang menjadi dasar prototype.</p></div>
+        <div class="grid3">
+          <div class="card"><h3>💸 Pengeluaran sulit dibatasi</h3><p>Jika santri memegang uang atau saldo tanpa kontrol, dana dapat habis terlalu cepat.</p></div>
+          <div class="card"><h3>👨‍👩‍👦 Wali kurang transparansi</h3><p>Wali mengetahui jumlah uang yang dikirim, tetapi tidak selalu mengetahui pola penggunaan sehari-hari.</p></div>
+          <div class="card"><h3>🏫 Pesantren terbebani pengawasan</h3><p>Pengurus membutuhkan kontrol tanpa harus memeriksa uang tunai setiap santri.</p></div>
+          <div class="card"><h3>🛍️ Merchant masih manual</h3><p>Kantin dan koperasi berpotensi mengalami pencatatan, uang kembalian, dan rekonsiliasi manual.</p></div>
+          <div class="card"><h3>🔐 Risiko QRIS di luar lingkungan</h3><p>Jika tidak dibatasi, santri dapat bertransaksi pada merchant yang tidak dikehendaki pesantren/wali.</p></div>
+          <div class="card"><h3>📊 Data belum menjadi insight</h3><p>Transaksi dapat diolah menjadi informasi perilaku belanja dan bahan edukasi finansial santri.</p></div>
+        </div>
+        <div class="section-title"><h2>Peluang Strategis</h2></div>
+        <div class="card">
+          <div class="row"><span>Tabungan santri</span><strong>Entry point</strong></div>
+          <div class="row"><span>QRIS kantin/koperasi</span><strong>Daily engagement</strong></div>
+          <div class="row"><span>Dashboard pesantren</span><strong>Institutional stickiness</strong></div>
+          <div class="row"><span>Wali santri</span><strong>Household engagement</strong></div>
+          <div class="row"><span>Literasi finansial</span><strong>Long-term relationship</strong></div>
+        </div>
+      </section>
+
+      <section id="solution" class="page">
+        <div class="hero">
+          <div class="eyebrow">Proposed Solution</div>
+          <h1>Satu Ekosistem, Lima Pengguna, Satu Kebijakan Keuangan Santri</h1>
+          <p>Aplikasi menjadi lapisan pengalaman, kontrol, dan monitoring. Bank tetap menjadi pemroses layanan keuangan sesuai produk dan mekanisme yang disetujui.</p>
+        </div>
+        <div class="section-title"><h2>Fitur Prioritas</h2></div>
+        <div class="grid3">
+          <div class="card"><h3>Limit Harian</h3><p>Contoh default Rp20.000/hari. Dapat dibedakan berdasarkan santri, jenjang, atau kebijakan wali/pesantren.</p></div>
+          <div class="card"><h3>Merchant Whitelist</h3><p>Transaksi hanya di merchant yang telah disetujui, misalnya kantin, koperasi, laundry, dan layanan pesantren.</p></div>
+          <div class="card"><h3>Approval Khusus</h3><p>Pembelian buku, obat, atau kebutuhan tertentu dapat melampaui limit setelah approval yang sah.</p></div>
+          <div class="card"><h3>Notifikasi Wali</h3><p>Wali memperoleh notifikasi dan ringkasan penggunaan dana anak.</p></div>
+          <div class="card"><h3>Dashboard Pesantren</h3><p>Pengurus melihat santri aktif, merchant, pola transaksi, kebijakan, serta kejadian yang perlu ditindaklanjuti.</p></div>
+          <div class="card"><h3>Audit Trail</h3><p>Perubahan limit, approval, status transaksi, dan aktivitas admin tercatat untuk kebutuhan kontrol.</p></div>
+        </div>
+      </section>
+
+      <section id="journey" class="page">
+        <div class="section-title"><h2>User Journey Transaksi</h2></div>
+        <div class="flow">
+          <div class="step"><div class="num">1</div><strong>Santri scan QRIS</strong><br><small>Merchant pesantren</small></div>
+          <div class="step"><div class="num">2</div><strong>Validasi merchant</strong><br><small>Whitelist & status merchant</small></div>
+          <div class="step"><div class="num">3</div><strong>Cek aturan</strong><br><small>Saldo, limit, kategori, jam</small></div>
+          <div class="step"><div class="num">4</div><strong>Otorisasi</strong><br><small>PIN / kontrol yang disepakati</small></div>
+          <div class="step"><div class="num">5</div><strong>Bayar & laporkan</strong><br><small>Banking rail + notifikasi</small></div>
+        </div>
+
+        <div class="section-title"><h2>Contoh Perilaku Sistem</h2></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Kondisi</th><th>Contoh</th><th>Keputusan</th></tr></thead>
+          <tbody>
+            <tr><td>Merchant valid, limit cukup</td><td>Belanja Rp5.000 di kantin, sisa limit Rp8.000</td><td><span class="tag ok">Proses</span></td></tr>
+            <tr><td>Melebihi sisa limit</td><td>Mencoba Rp10.000 saat sisa Rp8.000</td><td><span class="tag bad">Tolak</span></td></tr>
+            <tr><td>Merchant tidak diizinkan</td><td>QRIS toko di luar lingkungan pesantren</td><td><span class="tag bad">Tolak</span></td></tr>
+            <tr><td>Kebutuhan khusus</td><td>Buku Rp75.000</td><td><span class="tag wait">Approval</span></td></tr>
+            <tr><td>Saldo tidak cukup</td><td>Saldo Rp20.000, transaksi Rp25.000</td><td><span class="tag bad">Tolak</span></td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section id="business" class="page">
+        <div class="hero">
+          <div class="eyebrow">Business Case Simulator</div>
+          <h1>Ukur Potensi Aktivitas Sebelum Membicarakan Monetisasi</h1>
+          <p>Kalkulator ini menghitung potensi volume transaksi berdasarkan asumsi pilot. Tidak memasukkan fee, MDR, pendapatan bank, atau biaya integrasi.</p>
+        </div>
+
+        <div class="calc" style="margin-top:14px">
+          <h3 style="margin-top:0">Asumsi Skenario</h3>
+          <div class="calc-grid">
+            <div><label>Jumlah santri</label><input id="cSantri" type="number" value="500"></div>
+            <div><label>Santri aktif transaksi (%)</label><input id="cActive" type="number" value="80"></div>
+            <div><label>Rata-rata belanja/hari (Rp)</label><input id="cSpend" type="number" value="15000"></div>
+            <div><label>Hari transaksi/bulan</label><input id="cDays" type="number" value="26"></div>
+          </div>
+          <div class="calc-grid">
+            <div><label>Rata-rata transaksi/santri/hari</label><input id="cTxn" type="number" step="0.1" value="1.5"></div>
+            <div><label>Jumlah merchant pilot</label><input id="cMerchant" type="number" value="5"></div>
+            <div style="display:flex;align-items:end"><button class="btn primary" style="width:100%;margin-bottom:10px" onclick="calc()">Hitung Potensi</button></div>
+          </div>
+          <div class="result-grid">
+            <div class="result"><small>Santri aktif</small><strong id="rActive">400</strong></div>
+            <div class="result"><small>Transaksi/bulan</small><strong id="rTxn">15.600</strong></div>
+            <div class="result"><small>GMV/bulan</small><strong id="rGMV">Rp156.000.000</strong></div>
+            <div class="result"><small>GMV/tahun</small><strong id="rYear">Rp1.872.000.000</strong></div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Kenapa Tidak Menghitung Pendapatan BNI di Proposal Awal?</h2></div>
+        <div class="note warn">
+          Karena skema produk, biaya, MDR, sharing, SLA, dan model komersial belum disepakati. Proposal awal sebaiknya membuktikan kebutuhan, adopsi, dan potensi volume terlebih dahulu; perhitungan pendapatan dilakukan setelah skema resmi ditentukan bersama BNI.
+        </div>
+      </section>
+
+      <section id="pilot" class="page">
+        <div class="hero">
+          <div class="eyebrow">Pilot Proposal</div>
+          <h1>Mulai dari 1 Pesantren, Ukur 8–12 Minggu, Lalu Skalakan</h1>
+          <p>Pilot yang kecil tetapi terukur mengurangi risiko teknis dan operasional sekaligus menghasilkan bukti untuk keputusan scale-up.</p>
+        </div>
+        <div class="cards" style="margin-top:14px">
+          <div class="card"><small>Santri pilot</small><div class="big">100–300</div></div>
+          <div class="card"><small>Merchant pilot</small><div class="big">3–5</div></div>
+          <div class="card"><small>Periode observasi</small><div class="big">8–12 minggu</div></div>
+          <div class="card"><small>Limit awal</small><div class="big">Configurable</div></div>
+        </div>
+        <div class="section-title"><h2>Use Case Pilot</h2></div>
+        <div class="grid3">
+          <div class="card"><h3>Kantin</h3><p>Transaksi harian bernilai kecil dan frekuensi tinggi.</p></div>
+          <div class="card"><h3>Koperasi</h3><p>ATK, kebutuhan santri, dan pembelian buku dengan pengecualian tertentu.</p></div>
+          <div class="card"><h3>Laundry</h3><p>Transaksi jasa rutin yang mudah diidentifikasi sebagai merchant internal.</p></div>
+        </div>
+        <div class="section-title"><h2>KPI Pilot</h2></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>KPI</th><th>Apa yang dibuktikan</th><th>Contoh target diskusi</th></tr></thead>
+          <tbody>
+            <tr><td>Activation rate</td><td>Kemampuan onboarding santri</td><td>≥80%</td></tr>
+            <tr><td>Cashless adoption</td><td>Perubahan perilaku transaksi</td><td>≥70% transaksi merchant pilot</td></tr>
+            <tr><td>Valid transaction success</td><td>Keandalan alur transaksi</td><td>≥98%</td></tr>
+            <tr><td>Limit enforcement</td><td>Kontrol benar-benar bekerja</td><td>100% sesuai rules</td></tr>
+            <tr><td>Critical fund-loss incident</td><td>Keamanan operasional</td><td>0</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note warn" style="margin-top:12px">Target di atas adalah contoh target pilot untuk bahan diskusi, bukan standar atau SLA resmi BNI.</div>
+      </section>
+
+      <section id="architecture" class="page">
+        <div class="section-title"><h2>Arsitektur Konseptual</h2></div>
+        <div class="arch">
+          <div class="archbox"><h3>Experience Layer</h3><ul class="list"><li>Aplikasi santri</li><li>Portal wali</li><li>Dashboard pesantren</li><li>Portal merchant</li><li>Monitoring BNI</li></ul></div>
+          <div class="arrow">→</div>
+          <div class="archbox"><h3>SantriPay Control Layer</h3><ul class="list"><li>Role & identity mapping</li><li>Limit engine</li><li>Merchant whitelist</li><li>Approval workflow</li><li>Audit & notification</li></ul></div>
+          <div class="arrow">→</div>
+          <div class="archbox"><h3>Banking / Payment Layer</h3><ul class="list"><li>API resmi BNI</li><li>Account/payment services</li><li>QRIS</li><li>Settlement</li><li>Security & fraud controls</li></ul></div>
+        </div>
+        <div class="section-title"><h2>API Capability yang Perlu Dibahas</h2></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Capability</th><th>Tujuan</th><th>Catatan</th></tr></thead>
+          <tbody>
+            <tr><td>Account/identity mapping</td><td>Menautkan santri dengan produk/rekening yang sah</td><td>Model final ditentukan BNI</td></tr>
+            <tr><td>Balance information</td><td>Cek dana tersedia</td><td>Cakupan akses harus disetujui</td></tr>
+            <tr><td>Transaction history</td><td>Rekonsiliasi & dashboard</td><td>Minimalisasi data wajib</td></tr>
+            <tr><td>Payment initiation/status</td><td>Eksekusi & status transaksi</td><td>Gunakan kanal resmi</td></tr>
+            <tr><td>QRIS merchant/payment</td><td>Validasi dan proses use case QRIS</td><td>Detail produk perlu workshop</td></tr>
+            <tr><td>Webhook/callback</td><td>Status real-time</td><td>Untuk ledger & notifikasi</td></tr>
+          </tbody>
+        </table></div>
+        <div class="note blue" style="margin-top:12px">BNI menyediakan portal developer dan sandbox API. Fase discovery harus memetakan use case ini ke API BNI yang benar-benar tersedia untuk skema kerja sama yang dipilih.</div>
+      </section>
+
+      <section id="governance" class="page">
+        <div class="hero">
+          <div class="eyebrow">Governance & Risk</div>
+          <h1>SantriPay Mengontrol Aturan; Sistem Bank Mengontrol Uang</h1>
+          <p>Pemisahan tanggung jawab ini penting agar aplikasi tidak berperan sebagai pengganti bank atau penyelenggara pembayaran yang tidak semestinya.</p>
+        </div>
+        <div class="grid3" style="margin-top:14px">
+          <div class="card"><h3>Identity & Access</h3><ul class="list"><li>Role-based access</li><li>MFA untuk admin</li><li>Session control</li><li>Wali hanya melihat anak terkait</li></ul></div>
+          <div class="card"><h3>Transaction Control</h3><ul class="list"><li>Limit harian</li><li>Merchant whitelist</li><li>Jam transaksi</li><li>Approval kebutuhan khusus</li></ul></div>
+          <div class="card"><h3>Data Protection</h3><ul class="list"><li>Data minimization</li><li>Encryption</li><li>Masking</li><li>Retention & deletion policy</li></ul></div>
+          <div class="card"><h3>Auditability</h3><ul class="list"><li>Log perubahan limit</li><li>Log approval</li><li>Admin activity log</li><li>Correlation ID transaksi</li></ul></div>
+          <div class="card"><h3>Operational Risk</h3><ul class="list"><li>Timeout & retry control</li><li>Idempotency</li><li>Reversal handling</li><li>Reconciliation</li></ul></div>
+          <div class="card"><h3>Fraud Controls</h3><ul class="list"><li>Velocity checks</li><li>Device anomaly</li><li>Merchant status</li><li>Suspicious pattern alert</li></ul></div>
+        </div>
+        <div class="note warn" style="margin-top:12px">
+          SNAP menstandardisasi aspek teknis/keamanan, data, tata kelola, serta manajemen risiko dalam Open API Pembayaran. Desain produksi harus melalui review BNI dan mengikuti ketentuan/regulasi yang berlaku saat implementasi.
+        </div>
+      </section>
+
+      <section id="roadmap" class="page">
+        <div class="section-title"><h2>Roadmap yang Disarankan</h2></div>
+        <div class="road">
+          <div class="phase"><div class="label">FASE 1</div><h4>Discovery & Product Fit</h4><ul class="list"><li>Workshop BNI–pesantren</li><li>Pilih model produk/rekening</li><li>Tentukan ownership data</li><li>Pilih skema QRIS</li></ul></div>
+          <div class="phase"><div class="label">FASE 2</div><h4>Sandbox & Engineering</h4><ul class="list"><li>Daftarkan aplikasi sandbox</li><li>Map capability ke API</li><li>Bangun rules engine</li><li>Security test</li></ul></div>
+          <div class="phase"><div class="label">FASE 3</div><h4>Pilot</h4><ul class="list"><li>100–300 santri</li><li>3–5 merchant</li><li>Monitoring mingguan</li><li>Collect feedback</li></ul></div>
+          <div class="phase"><div class="label">FASE 4</div><h4>Scale-up</h4><ul class="list"><li>Multi pesantren</li><li>Automated onboarding</li><li>Analitik regional</li><li>Operational SLA</li></ul></div>
+        </div>
+        <div class="section-title"><h2>Gate Sebelum Scale-up</h2></div>
+        <div class="card">
+          <div class="row"><span>Product fit terbukti</span><span class="tag info">Gate 1</span></div>
+          <div class="row"><span>Security & compliance approved</span><span class="tag info">Gate 2</span></div>
+          <div class="row"><span>Reconciliation stabil</span><span class="tag info">Gate 3</span></div>
+          <div class="row"><span>KPI pilot memenuhi target</span><span class="tag info">Gate 4</span></div>
+          <div class="row"><span>Operating model & support siap</span><span class="tag info">Gate 5</span></div>
+        </div>
+      </section>
+
+      <section id="decision" class="page">
+        <div class="hero">
+          <div class="eyebrow">Decision Request</div>
+          <h1>Yang Dibutuhkan dari BNI Bukan Langsung “Setuju Bangun”, Melainkan Setuju Melakukan Discovery Resmi</h1>
+          <p>Tahap pertama yang paling realistis adalah membentuk tim kecil untuk memvalidasi produk, teknis, compliance, QRIS, dan pilot pesantren.</p>
+        </div>
+        <div class="ask" style="margin-top:14px">
+          <h2>Usulan Keputusan Pertemuan Awal</h2>
+          <div class="ask-grid">
+            <div class="ask-item"><strong>1. Tunjuk Product Sponsor</strong><p>Menentukan unit BNI yang menjadi pemilik diskusi use case.</p></div>
+            <div class="ask-item"><strong>2. Jadwalkan Technical Discovery</strong><p>Memetakan use case SantriPay ke API, QRIS, dan sandbox yang tersedia.</p></div>
+            <div class="ask-item"><strong>3. Pilih 1 Pesantren Pilot</strong><p>Memastikan kebutuhan riil, bukan hanya asumsi desain.</p></div>
+            <div class="ask-item"><strong>4. Tetapkan Pilot Charter</strong><p>Ruang lingkup, KPI, periode, data, risiko, dan kriteria go/no-go.</p></div>
+          </div>
+        </div>
+        <div class="section-title"><h2>Pertanyaan untuk Tim BNI</h2></div>
+        <div class="card">
+          <div class="row"><span>Produk/rekening apa yang paling tepat untuk model santri ini?</span><span class="tag info">Product</span></div>
+          <div class="row"><span>API apa yang tersedia untuk saldo, histori, transaksi, callback, dan QRIS?</span><span class="tag info">Technology</span></div>
+          <div class="row"><span>Apakah limit lebih tepat di bank, aplikasi, atau kombinasi?</span><span class="tag info">Architecture</span></div>
+          <div class="row"><span>MPM statis, MPM dinamis, atau skema lain yang direkomendasikan?</span><span class="tag info">QRIS</span></div>
+          <div class="row"><span>Apa syarat legal, risk, security, dan onboarding untuk pilot?</span><span class="tag info">Compliance</span></div>
+          <div class="row"><span>Bagaimana model support, settlement, reversal, dan dispute?</span><span class="tag info">Operations</span></div>
+        </div>
+      </section>
+
+      <section id="sources" class="page">
+        <div class="section-title"><h2>Rujukan Resmi</h2><p>Digunakan untuk menjaga proposal tetap dekat dengan kerangka aktual.</p></div>
+        <div class="grid3">
+          <div class="card source"><h3>BNI Digital Services</h3><p>Portal BNI untuk pengembang menjelaskan akses aplikasi, credentials, token, pemilihan API, dan sandbox.</p><a href="https://digitalservices.bni.co.id/developer" target="_blank">digitalservices.bni.co.id/developer ↗</a></div>
+          <div class="card source"><h3>Bank Indonesia — SNAP</h3><p>SNAP merupakan standar nasional Open API Pembayaran yang mencakup aspek teknis, keamanan, data, tata kelola, dan risiko.</p><a href="https://www.bi.go.id/id/layanan/Standar/SNAP/default.aspx" target="_blank">Halaman SNAP BI ↗</a></div>
+          <div class="card source"><h3>Bank Indonesia — QRIS</h3><p>QRIS mengakomodasi MPM dan CPM; MPM mencakup model statis dan dinamis.</p><a href="https://www.bi.go.id/id/fungsi-utama/sistem-pembayaran/ritel/kanal-layanan/QRIS/default.aspx" target="_blank">Halaman QRIS BI ↗</a></div>
+        </div>
+        <div class="note warn" style="margin-top:12px">
+          Proposal ini sengaja tidak menetapkan endpoint API final, fee, MDR komersial, SLA, struktur rekening, atau skema legal tertentu. Seluruhnya harus dikonfirmasi melalui proses resmi BNI dan ketentuan regulator pada saat implementasi.
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function rupiah(n){return 'Rp'+Math.round(n).toLocaleString('id-ID')}
+function calc(){
+  const santri=+document.getElementById('cSantri').value||0;
+  const active=(+document.getElementById('cActive').value||0)/100;
+  const spend=+document.getElementById('cSpend').value||0;
+  const days=+document.getElementById('cDays').value||0;
+  const txn=+document.getElementById('cTxn').value||0;
+  const activeSantri=Math.round(santri*active);
+  const txMonth=Math.round(activeSantri*days*txn);
+  const gmvMonth=activeSantri*days*spend;
+  const gmvYear=gmvMonth*12;
+  document.getElementById('rActive').textContent=activeSantri.toLocaleString('id-ID');
+  document.getElementById('rTxn').textContent=txMonth.toLocaleString('id-ID');
+  document.getElementById('rGMV').textContent=rupiah(gmvMonth);
+  document.getElementById('rYear').textContent=rupiah(gmvYear);
+}
+calc();
+</script>
+</body>
+</html>
